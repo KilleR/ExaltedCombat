@@ -7,14 +7,18 @@ export class DiceRollerService {
     constructor() {
     }
 
-    rollOne(): number {
-        return Math.ceil(Math.random() * this.diceSize)
+    rollOne(min?: number): number {
+        if(!min) {
+            min = 1
+        }
+        return Math.floor(Math.random() * (this.diceSize - (min-1)) + min) // roll between min and n ( [0 : n-min]+min
     }
 
-    roll(n: number): number[] {
+
+    roll(n: number, min?: number): number[] {
         let rolls: number[] = [];
         for (let i = 0; i < n; i++) {
-            rolls.push(this.rollOne());
+            rolls.push(this.rollOne(min));
         }
         return rolls;
     }

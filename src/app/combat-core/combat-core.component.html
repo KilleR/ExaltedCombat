@@ -28,8 +28,20 @@
                     </mat-input-container>
                 </div>
                 <div>
+                    <mat-slide-toggle formControlName="hungryTiger">Hungry Tiger?</mat-slide-toggle>
+                    <span *ngIf="getVal('hungryTiger')"><mat-icon class="textIcon" color="warn">warning</mat-icon>TARGET MUST BE CRASHED</span>
+                </div>
+                <div>
                     <mat-slide-toggle formControlName="excellentStrike">Excellent Strike?</mat-slide-toggle>
                 </div>
+
+                <div>
+                    <mat-slide-toggle formControlName="invincibleFury">Invincible Fury of Dawn?</mat-slide-toggle>
+                </div>
+                <span *ngIf="getVal('invincibleFury')">
+                    <mat-slider min="1" [max]="getVal('attr')" formControlName="invincibleFuryNum"></mat-slider>{{getVal('invincibleFuryNum')}}
+                </span>
+
                 <div>
                     <button mat-raised-button color="accent" (click)="roll()">ROLL</button>
                 </div>

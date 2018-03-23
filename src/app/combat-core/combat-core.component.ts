@@ -31,6 +31,9 @@ export class CombatCoreComponent implements OnInit {
             fireAndStones: true,
             fireAndStonesValue: 5,
             excellentStrike: true,
+            hungryTiger: false,
+            invincibleFury: true,
+            invincibleFuryNum: 1,
         })
     }
 
@@ -44,22 +47,29 @@ export class CombatCoreComponent implements OnInit {
         attackPool += this.getVal('skill');
 
         // roll attack
-        let rolls = this._diceRoller.roll(attackPool);
+        let rolls = this.getVal('excellentStrike') ? this._diceRoller.roll(attackPool, 2) : this._diceRoller.roll(attackPool);
         console.log('To Hit:', rolls);
         attack.toHitResults = rolls.sort((n1, n2) => n1 - n2);
 
         // get wound pool
         attack.hitMargin = attack.toHitTotal - this.getVal('enemyDef');
+        if(this.getVal('excellentStrike')) {
+            attack.hitMargin++;
+        }
         console.log('Hit margin:', attack.hitMargin);
 
-        if(attack.hitMargin >= 0) {
+        if (attack.hitMargin >= 0) {
             let woundPool = 0;
             woundPool += this.getVal('initiative');
             console.log('Iniitative', this.getVal('initiative'));
-            if(this.getVal('fireAndStones')) {
+            if (this.getVal('hungryTiger')) {
+                woundPool += attack.hitMargin;
+                console.log('Hungry Tiger', attack.hitMargin);
+            }
+            if (this.getVal('fireAndStones')) {
                 let fns = Math.min(this.getVal('fireAndStonesValue'), attack.hitMargin);
                 woundPool += fns;
-                console.log('Fire and Stones', fns)
+                console.log('Fire and Stones', fns);
             }
 
             rolls = this._diceRoller.roll(woundPool);
@@ -67,6 +77,10 @@ export class CombatCoreComponent implements OnInit {
         }
 
         this.attacks.push(attack);
+    }
+
+    rollTest() {
+        console.log(this._diceRoller.rollTest());
     }
 
     // helper to fetch core values
