@@ -1,7 +1,50 @@
 <div class="route-content">
     <mat-card>
         <mat-card-content>
+            <mat-toolbar>Input stuff</mat-toolbar>
+            <form [formGroup]="inputForm">
+                <div>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Attribute" formControlName="attr" />
+                    </mat-input-container>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Skill" formControlName="skill" />
+                    </mat-input-container>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Essence" formControlName="essence" />
+                    </mat-input-container>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Initiative" formControlName="initiative" />
+                    </mat-input-container>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Enemy Defence" formControlName="enemyDef">
+                    </mat-input-container>
+                </div>
 
+                <div>
+                    <mat-slide-toggle formControlName="fireAndStones">Fire and Stones?</mat-slide-toggle>
+                    <mat-input-container *ngIf="inputForm.controls['fireAndStones'].value">
+                        <input type="number" matInput placeholder="Carry over" formControlName="fireAndStonesValue">
+                    </mat-input-container>
+                </div>
+                <div>
+                    <mat-slide-toggle formControlName="excellentStrike">Excellent Strike?</mat-slide-toggle>
+                </div>
+                <div>
+                    <button mat-raised-button color="accent" (click)="roll()">ROLL</button>
+                </div>
+            </form>
+            {{inputForm.value | json}}<br>
+            {{inputForm.get('fireAndStonesValue').value}}
+        </mat-card-content>
+
+        <mat-card-content>
+            <mat-toolbar>Output stuff</mat-toolbar>
+            <div *ngFor="let attack of attacks">
+                <span>{{attack.toHitResults.length}}{{attack.toHitResults | json}}: {{attack.toHitTotal}}</span>
+                <span *ngIf="attack.hitMargin >= 0">Hit by {{attack.hitMargin}} <br> => {{attack.woundResults.length}}{{attack.woundResults | json}}: {{attack.woundTotal}}</span>
+                <span *ngIf="attack.hitMargin < 0">Miss! ({{attack.hitMargin}})</span>
+            </div>
         </mat-card-content>
     </mat-card>
 </div>

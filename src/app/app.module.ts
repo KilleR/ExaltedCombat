@@ -7,6 +7,8 @@ import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MaterialModulesModule} from "./material-modules/material-modules.module";
 import { CombatCoreComponent } from './combat-core/combat-core.component';
+import {DiceRollerService} from "./dice-roller.service";
+import {ReactiveFormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -18,9 +20,10 @@ import { CombatCoreComponent } from './combat-core/combat-core.component';
         BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
+        ReactiveFormsModule,
         MaterialModulesModule
     ],
-    providers: [],
+    providers: [DiceRollerService],
     bootstrap: [AppComponent]
 })
 export class AppModule {
