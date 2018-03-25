@@ -11,6 +11,11 @@
                         <input type="number" matInput placeholder="Skill" formControlName="skill" />
                     </mat-input-container>
                     <mat-input-container>
+                        <input type="number" matInput placeholder="Stunt Bonus" formControlName="stunt" />
+                    </mat-input-container>
+                </div>
+                <div>
+                    <mat-input-container>
                         <input type="number" matInput placeholder="Essence" formControlName="essence" />
                     </mat-input-container>
                     <mat-input-container>
@@ -29,6 +34,9 @@
                     <mat-input-container *ngIf="inputForm.controls['fireAndStones'].value">
                         <input type="number" matInput placeholder="Carry over" formControlName="fireAndStonesValue">
                     </mat-input-container>
+                </div>
+                <div>
+                    <mat-slide-toggle formControlName="immortalBlade">Immortal Blade Trimphant?</mat-slide-toggle>
                 </div>
                 <div>
                     <mat-slide-toggle formControlName="excellentStrike">Excellent Strike?</mat-slide-toggle>

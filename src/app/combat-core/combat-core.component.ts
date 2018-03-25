@@ -53,12 +53,14 @@ export class CombatCoreComponent implements OnInit {
         this.inputForm = this._fb.group({
             skill: 5,
             attr: 10,
+            stunt: 0,
             essence: 5,
             initiative: 15,
             enemyDef: 7,
             enemyOnslaught: true,
             fireAndStones: true,
             fireAndStonesValue: 5,
+            immortalBlade: true,
             excellentStrike: true,
             morningSunlight: true,
             hungryTiger: true,
@@ -106,6 +108,7 @@ export class CombatCoreComponent implements OnInit {
             let attackPool = 0;
             attackPool += this.getVal('attr');
             attackPool += this.getVal('skill');
+            attackPool += this.getVal('stunt');
 
             if(this.getVal('thunderboltAttack')) {
                 attack.woundMultiple++;
@@ -163,6 +166,13 @@ export class CombatCoreComponent implements OnInit {
                     let fns = Math.min(this.getVal('fireAndStonesValue'), attack.hitMargin);
                     woundPool += fns;
                     // console.log('Fire and Stones', fns);
+                }
+                if (this.getVal('immortalBlade')) {
+                    woundPool += this.getVal('stunt'); // add stunt bonus
+
+                    let immortalBladeMoved = Math.min(this.getVal('essence'), woundPool);
+                    woundPool -= immortalBladeMoved;
+                    attack.woundAdded = immortalBladeMoved;
                 }
 
                 rolls = this._diceRoller.roll(woundPool);
