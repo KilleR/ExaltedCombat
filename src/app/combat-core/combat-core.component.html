@@ -16,9 +16,12 @@
                     <mat-input-container>
                         <input type="number" matInput placeholder="Initiative" formControlName="initiative" />
                     </mat-input-container>
+                </div>
+                <div>
                     <mat-input-container>
                         <input type="number" matInput placeholder="Enemy Defence" formControlName="enemyDef">
                     </mat-input-container>
+                    <mat-slide-toggle formControlName="enemyOnslaught">Affected by Onslaught?</mat-slide-toggle>
                 </div>
 
                 <div>
@@ -28,35 +31,59 @@
                     </mat-input-container>
                 </div>
                 <div>
+                    <mat-slide-toggle formControlName="excellentStrike">Excellent Strike?</mat-slide-toggle>
+                </div>
+                <div>
+                    <mat-slide-toggle formControlName="thunderboltAttack">Thunderbolt Attack Prana?</mat-slide-toggle>
+                </div>
+                <div>
                     <mat-slide-toggle formControlName="hungryTiger">Hungry Tiger?</mat-slide-toggle>
                     <span *ngIf="getVal('hungryTiger')"><mat-icon class="textIcon" color="warn">warning</mat-icon>TARGET MUST BE CRASHED</span>
                 </div>
                 <div>
-                    <mat-slide-toggle formControlName="excellentStrike">Excellent Strike?</mat-slide-toggle>
+                    <mat-slide-toggle formControlName="morningSunlight">Edge of Morning Sunlight?</mat-slide-toggle>
+                    <span *ngIf="getVal('morningSunlight')"><mat-icon class="textIcon" color="warn">warning</mat-icon>TARGET MUST BE A CREATURE OF DARKNESS</span>
                 </div>
 
                 <div>
                     <mat-slide-toggle formControlName="invincibleFury">Invincible Fury of Dawn?</mat-slide-toggle>
                 </div>
                 <span *ngIf="getVal('invincibleFury')">
-                    <mat-slider min="1" [max]="getVal('attr')" formControlName="invincibleFuryNum"></mat-slider>{{getVal('invincibleFuryNum')}}
+                    <mat-slider min="1" [max]="getVal('attr')" formControlName="invincibleFuryNum"></mat-slider>
+                    {{getVal('invincibleFuryNum')}}
                 </span>
 
                 <div>
                     <button mat-raised-button color="accent" (click)="roll()">ROLL</button>
                 </div>
             </form>
-            {{inputForm.value | json}}<br>
-            {{inputForm.get('fireAndStonesValue').value}}
         </mat-card-content>
 
         <mat-card-content>
-            <mat-toolbar>Output stuff</mat-toolbar>
-            <div *ngFor="let attack of attacks">
+            <mat-toolbar>
+                Output stuff
+                <span class="spacer"></span>
+                <span>
+                    Essence Cost:
+                    <span *ngIf="cost.motes > 0">
+                        {{cost.motes}}m
+                    </span>
+                    <span *ngIf="cost.initiative > 0">
+                        {{cost.initiative}}i
+                    </span>
+                    <span *ngIf="cost.willpower > 0">
+                        {{cost.willpower}}wp
+                    </span>
+                </span>
+            </mat-toolbar>
+            Total Wounds {{woundTotal}} ({{basicWoundTotal}}basic + {{extraWoundTotal}}extra)
+            <mat-card *ngFor="let attack of attacks; let i=index">
+                <mat-card-title>Attack {{i+1}}</mat-card-title>
                 <span>{{attack.toHitResults.length}}{{attack.toHitResults | json}}: {{attack.toHitTotal}}</span>
                 <span *ngIf="attack.hitMargin >= 0">Hit by {{attack.hitMargin}} <br> => {{attack.woundResults.length}}{{attack.woundResults | json}}: {{attack.woundTotal}}</span>
+                <span *ngIf="attack.extraWoundResults.length >= 0"><br> => {{attack.extraWoundResults.length}}{{attack.extraWoundResults | json}}: {{attack.extraWoundTotal}}</span>
                 <span *ngIf="attack.hitMargin < 0">Miss! ({{attack.hitMargin}})</span>
-            </div>
+            </mat-card>
         </mat-card-content>
     </mat-card>
 </div>
