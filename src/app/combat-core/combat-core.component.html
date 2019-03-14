@@ -4,61 +4,61 @@
             <mat-toolbar>Input stuff</mat-toolbar>
             <form [formGroup]="inputForm">
                 <div>
-                    <mat-input-container>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Dexterity" formControlName="atkAttr" />
-                    </mat-input-container>
-                    <mat-input-container>
+                    </mat-form-field>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Skill" formControlName="skill" />
-                    </mat-input-container>
-                    <mat-input-container>
+                    </mat-form-field>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Stunt Bonus" formControlName="stunt" />
-                    </mat-input-container>
+                    </mat-form-field>
                 </div>
                 <div>
-                    <mat-input-container>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Strength{{(this.getVal('increasingStrength'))?' ('+totalDmgAttr+' total)':''}}" formControlName="dmgAttr" />
-                    </mat-input-container>
-                    <mat-input-container>
+                    </mat-form-field>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Essence" formControlName="essence" />
-                    </mat-input-container>
-                    <mat-input-container>
+                    </mat-form-field>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Initiative" formControlName="initiative" />
-                    </mat-input-container>
+                    </mat-form-field>
                 </div>
                 <div>
-                    <mat-input-container>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Enemy Defence" formControlName="enemyDef">
-                    </mat-input-container>
+                    </mat-form-field>
                     <mat-slide-toggle formControlName="enemyOnslaught">Affected by Onslaught?</mat-slide-toggle>
                 </div>
                 <div>
-                    <mat-input-container>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Bonus Attack Dice (specilaity?)" formControlName="adHocToHit">
-                    </mat-input-container>
-                    <mat-input-container>
+                    </mat-form-field>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Bonus Attack Hits" formControlName="adHocAutoHit">
-                    </mat-input-container>
+                    </mat-form-field>
                 </div>
                 <div>
-                    <mat-input-container>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Bonus Wound Dice" formControlName="adHocToWound">
-                    </mat-input-container>
-                    <mat-input-container>
+                    </mat-form-field>
+                    <mat-form-field>
                         <input type="number" matInput placeholder="Bonus Wound Hits" formControlName="adHocAutoWound">
-                    </mat-input-container>
+                    </mat-form-field>
                 </div>
 
                 <div>
                     <mat-slide-toggle formControlName="fireAndStones">Fire and Stones?</mat-slide-toggle>
-                    <mat-input-container *ngIf="inputForm.controls['fireAndStones'].value">
+                    <mat-form-field *ngIf="inputForm.controls['fireAndStones'].value">
                         <input type="number" matInput placeholder="Raided Strength" formControlName="fireAndStonesValue">
-                    </mat-input-container>
+                    </mat-form-field>
                 </div>
                 <div>
                     <mat-slide-toggle formControlName="increasingStrength">Increasing Strength Exercise?</mat-slide-toggle>
-                    <mat-input-container *ngIf="inputForm.controls['increasingStrength'].value">
+                    <mat-form-field *ngIf="inputForm.controls['increasingStrength'].value">
                         <input type="number" matInput placeholder="Carry over" formControlName="increasingStrengthValue">
-                    </mat-input-container>
+                    </mat-form-field>
                 </div>
                 <div>
                     <mat-slide-toggle formControlName="immortalBlade">Immortal Blade Trimphant?</mat-slide-toggle>
