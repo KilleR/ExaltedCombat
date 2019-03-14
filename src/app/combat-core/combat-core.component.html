@@ -5,7 +5,7 @@
             <form [formGroup]="inputForm">
                 <div>
                     <mat-input-container>
-                        <input type="number" matInput placeholder="Attribute" formControlName="attr" />
+                        <input type="number" matInput placeholder="Dexterity" formControlName="atkAttr" />
                     </mat-input-container>
                     <mat-input-container>
                         <input type="number" matInput placeholder="Skill" formControlName="skill" />
@@ -15,6 +15,9 @@
                     </mat-input-container>
                 </div>
                 <div>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Strength{{(this.getVal('increasingStrength'))?' ('+totalDmgAttr+' total)':''}}" formControlName="dmgAttr" />
+                    </mat-input-container>
                     <mat-input-container>
                         <input type="number" matInput placeholder="Essence" formControlName="essence" />
                     </mat-input-container>
@@ -28,11 +31,33 @@
                     </mat-input-container>
                     <mat-slide-toggle formControlName="enemyOnslaught">Affected by Onslaught?</mat-slide-toggle>
                 </div>
+                <div>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Bonus Attack Dice (specilaity?)" formControlName="adHocToHit">
+                    </mat-input-container>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Bonus Attack Hits" formControlName="adHocAutoHit">
+                    </mat-input-container>
+                </div>
+                <div>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Bonus Wound Dice" formControlName="adHocToWound">
+                    </mat-input-container>
+                    <mat-input-container>
+                        <input type="number" matInput placeholder="Bonus Wound Hits" formControlName="adHocAutoWound">
+                    </mat-input-container>
+                </div>
 
                 <div>
                     <mat-slide-toggle formControlName="fireAndStones">Fire and Stones?</mat-slide-toggle>
                     <mat-input-container *ngIf="inputForm.controls['fireAndStones'].value">
-                        <input type="number" matInput placeholder="Carry over" formControlName="fireAndStonesValue">
+                        <input type="number" matInput placeholder="Raided Strength" formControlName="fireAndStonesValue">
+                    </mat-input-container>
+                </div>
+                <div>
+                    <mat-slide-toggle formControlName="increasingStrength">Increasing Strength Exercise?</mat-slide-toggle>
+                    <mat-input-container *ngIf="inputForm.controls['increasingStrength'].value">
+                        <input type="number" matInput placeholder="Carry over" formControlName="increasingStrengthValue">
                     </mat-input-container>
                 </div>
                 <div>
@@ -57,7 +82,7 @@
                     <mat-slide-toggle formControlName="invincibleFury">Invincible Fury of Dawn?</mat-slide-toggle>
                 </div>
                 <span *ngIf="getVal('invincibleFury')">
-                    <mat-slider min="1" [max]="getVal('attr')" formControlName="invincibleFuryNum"></mat-slider>
+                    <mat-slider min="1" [max]="getVal('atkAttr')>totalDmgAttr?getVal('atkAttr'):totalDmgAttr" formControlName="invincibleFuryNum"></mat-slider>
                     {{getVal('invincibleFuryNum')}}
                 </span>
 
@@ -87,10 +112,19 @@
             Total Wounds {{woundTotal}} ({{basicWoundTotal}}basic + {{extraWoundTotal}}extra)
             <mat-card *ngFor="let attack of attacks; let i=index">
                 <mat-card-title>Attack {{i+1}}</mat-card-title>
-                <span>{{attack.toHitResults.length}}{{attack.toHitResults | json}}: {{attack.toHitTotal}}</span>
-                <span *ngIf="attack.hitMargin >= 0">Hit by {{attack.hitMargin}} <br> => {{attack.woundResults.length}}{{attack.woundResults | json}}: {{attack.woundTotal}}</span>
-                <span *ngIf="attack.extraWoundResults.length >= 0"><br> => {{attack.extraWoundResults.length}}{{attack.extraWoundResults | json}}: {{attack.extraWoundTotal}}</span>
-                <span *ngIf="attack.hitMargin < 0">Miss! ({{attack.hitMargin}})</span>
+                <span>
+                    {{attack.toHitResults.length}}{{attack.toHitResults | json}}: <span *ngIf="attack.attackAdded">{{attack.toHitTotal - attack.attackAdded}}+{{attack.attackAdded}} = </span>{{attack.toHitTotal}}
+                </span>
+                <span *ngIf="attack.hitMargin >= 0">
+                    Hit by {{attack.hitMargin}} <br>
+                    => {{attack.woundResults.length}}{{attack.woundResults | json}}: {{attack.woundTotal}}
+                </span>
+                <span *ngIf="attack.extraWoundResults.length > 0">
+                    <br> => {{attack.extraWoundResults.length}}{{attack.extraWoundResults | json}}: {{attack.extraWoundTotal}}
+                </span>
+                <span *ngIf="attack.hitMargin < 0">
+                    Miss! ({{attack.hitMargin}})
+                </span>
             </mat-card>
         </mat-card-content>
     </mat-card>

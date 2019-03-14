@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {DiceRollerService} from "../dice-roller.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {Attack} from "./attack";
-import {Cost} from "../cost";
+import {DiceRollerService} from '../dice-roller.service';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {Attack} from './attack';
+import {Cost} from '../cost';
 
 @Component({
     selector: 'app-combat-core',
@@ -14,9 +14,18 @@ export class CombatCoreComponent implements OnInit {
     inputForm: FormGroup;
     attacks: Attack[];
 
-    get woundTotal():number {
+    get totalDmgAttr(): number {
         let tot = 0;
-        for(let i = 0; i<this.attacks.length; i++) {
+        tot += this.getVal('dmgAttr');
+        if (this.getVal('increasingStrength')) {
+            tot += this.getVal('increasingStrengthValue');
+        }
+        return tot;
+    }
+
+    get woundTotal(): number {
+        let tot = 0;
+        for (let i = 0; i < this.attacks.length; i++) {
             tot += this.attacks[i].woundTotal;
             tot += this.attacks[i].extraWoundTotal;
         }
@@ -25,15 +34,15 @@ export class CombatCoreComponent implements OnInit {
 
     get basicWoundTotal(): number {
         let tot = 0;
-        for(let i = 0; i<this.attacks.length; i++) {
+        for (let i = 0; i < this.attacks.length; i++) {
             tot += this.attacks[i].woundTotal;
         }
         return tot;
     }
 
-    get extraWoundTotal(): number{
+    get extraWoundTotal(): number {
         let tot = 0;
-        for(let i = 0; i<this.attacks.length; i++) {
+        for (let i = 0; i < this.attacks.length; i++) {
             tot += this.attacks[i].extraWoundTotal;
         }
         return tot;
@@ -52,7 +61,8 @@ export class CombatCoreComponent implements OnInit {
     createForm() {
         this.inputForm = this._fb.group({
             skill: 5,
-            attr: 10,
+            atkAttr: 5,
+            dmgAttr: 5,
             stunt: 0,
             essence: 5,
             initiative: 15,
@@ -60,6 +70,8 @@ export class CombatCoreComponent implements OnInit {
             enemyOnslaught: true,
             fireAndStones: true,
             fireAndStonesValue: 5,
+            increasingStrength: true,
+            increasingStrengthValue: 5,
             immortalBlade: true,
             excellentStrike: true,
             morningSunlight: true,
@@ -67,7 +79,12 @@ export class CombatCoreComponent implements OnInit {
             thunderboltAttack: true,
             invincibleFury: true,
             invincibleFuryNum: 10,
-        })
+
+            adHocToHit: 1,
+            adHocAutoHit: 0,
+            adHocToWound: 0,
+            adHocAutoWound: 0
+        });
     }
 
     roll() {
@@ -85,18 +102,18 @@ export class CombatCoreComponent implements OnInit {
             attackCount = this.getVal('invincibleFuryNum');
         }
 
-        if(this.getVal('excellentStrike')) {
+        if (this.getVal('excellentStrike')) {
             this.cost.motes += 3;
         }
-        if(this.getVal('hungryTiger')) {
+        if (this.getVal('hungryTiger')) {
             this.cost.motes += 3;
             this.cost.initiative += 2;
-            attackInitiative -= 2
+            attackInitiative -= 2;
         }
-        if(this.getVal('fireAndStones')) {
-            this.cost.motes += this.getVal('fireAndStonesValue')
+        if (this.getVal('fireAndStones')) {
+            this.cost.motes += this.getVal('fireAndStonesValue');
         }
-        if(this.getVal('thunderboltAttack')) {
+        if (this.getVal('thunderboltAttack')) {
             this.cost.motes += 4;
             this.cost.willpower += 1;
         }
@@ -104,31 +121,34 @@ export class CombatCoreComponent implements OnInit {
         // loop attacks
         for (let i = 0; i < attackCount; i++) {
             // get attack pool
-            let attack = new Attack();
+            const attack = new Attack();
             let attackPool = 0;
-            attackPool += this.getVal('attr');
+            attackPool += this.getVal('atkAttr');
             attackPool += this.getVal('skill');
             attackPool += this.getVal('stunt');
+            attackPool += this.getVal('adHocToHit');
 
-            if(this.getVal('thunderboltAttack')) {
+            attack.attackAdded += this.getVal('adHocAutoHit');
+            if (this.getVal('excellentStrike')) {
+                attack.attackAdded++;
+            }
+
+            if (this.getVal('thunderboltAttack')) {
                 attack.woundMultiple++;
             }
 
             // roll attack
             let rolls = this.getVal('excellentStrike') ? this._diceRoller.roll(attackPool, 2) : this._diceRoller.roll(attackPool);
-            console.log('To Hit:', rolls);
+            // console.log('To Hit:', rolls);
             attack.toHitResults = rolls.sort((n1, n2) => n1 - n2);
 
             // get wound pool
-            attack.hitMargin = attack.toHitTotal;
+            attack.hitMargin = attack.toHitTotal + attack.attackAdded;
             if (this.getVal('enemyOnslaught')) {
                 attack.hitMargin -= Math.max(1, this.getVal('enemyDef') - i);
                 // console.log("Def after onslaught:",Math.max(1, this.getVal('enemyDef') - i));
             } else {
                 attack.hitMargin -= this.getVal('enemyDef');
-            }
-            if (this.getVal('excellentStrike')) {
-                attack.hitMargin++;
             }
             // console.log('Hit margin:', attack.hitMargin);
 
@@ -137,11 +157,14 @@ export class CombatCoreComponent implements OnInit {
                 if (this.getVal('morningSunlight')) {
                     this.cost.motes += 2;
 
-                    attack.extraWoundResults = this._diceRoller.roll(this.getVal('essence'))
+                    attack.extraWoundResults = this._diceRoller.roll(this.getVal('essence'));
                 }
 
                 // regular wound calculations
                 let woundPool = 0;
+
+                attack.woundAdded += this.getVal('adHocAutoWound'); // save ad-hoc automatic wounds
+                woundPool += this.getVal('adHocToWound'); // add ad-hoc wound pool
 
                 if (this.getVal('invincibleFury')) {
                     woundPool++;
@@ -153,9 +176,12 @@ export class CombatCoreComponent implements OnInit {
                 if ((attackInitiative % attackCount + i) >= attackCount) {
                     woundPool++;
                 }
-                console.log('Wound Pool from init:', woundPool);
-                if(this.getVal('invincibleFury')) {
+                // console.log('Wound Pool from init:', woundPool);
+                if (this.getVal('invincibleFury')) {
                     woundPool++; // +1 base per attack during IFOD
+                }
+                if (this.getVal('increasingStrength')) {
+                    woundPool += this.getVal('increasingStrengthValue'); // +1 base per attack during IFOD
                 }
 
                 if (this.getVal('hungryTiger')) {
@@ -163,14 +189,14 @@ export class CombatCoreComponent implements OnInit {
                     // console.log('Hungry Tiger', attack.hitMargin);
                 }
                 if (this.getVal('fireAndStones')) {
-                    let fns = Math.min(this.getVal('fireAndStonesValue'), attack.hitMargin);
+                    const fns = Math.min(this.getVal('fireAndStonesValue'), attack.hitMargin);
                     woundPool += fns;
                     // console.log('Fire and Stones', fns);
                 }
                 if (this.getVal('immortalBlade')) {
                     woundPool += this.getVal('stunt'); // add stunt bonus
 
-                    let immortalBladeMoved = Math.min(this.getVal('essence'), woundPool);
+                    const immortalBladeMoved = Math.min(this.getVal('essence'), woundPool);
                     woundPool -= immortalBladeMoved;
                     attack.woundAdded = immortalBladeMoved;
                 }
@@ -189,6 +215,10 @@ export class CombatCoreComponent implements OnInit {
 
     // helper to fetch core values
     getVal(v: string): any {
-        return this.inputForm.get(v).value;
+        if (this.inputForm.get(v)) {
+            return this.inputForm.get(v).value;
+        } else {
+            return 0;
+        }
     }
 }
